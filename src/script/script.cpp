@@ -3,10 +3,10 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "script.h"
+#include <script/script.h>
 
-#include "tinyformat.h"
-#include "utilstrencodings.h"
+#include <tinyformat.h>
+#include <utilstrencodings.h>
 
 const char* GetOpName(opcodetype opcode)
 {
@@ -266,4 +266,17 @@ std::string CScriptWitness::ToString() const
         ret += HexStr(stack[i]);
     }
     return ret + ")";
+}
+
+bool CScript::HasValidOps() const
+{
+    CScript::const_iterator it = begin();
+    while (it < end()) {
+        opcodetype opcode;
+        std::vector<unsigned char> item;
+        if (!GetOp(it, opcode, item) || opcode > MAX_OPCODE || item.size() > MAX_SCRIPT_ELEMENT_SIZE) {
+            return false;
+        }
+    }
+    return true;
 }
